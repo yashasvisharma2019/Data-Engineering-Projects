@@ -83,7 +83,28 @@ JOIN dbo.transactions t ON a.account_id = t.account_id
 GROUP BY a.account_id, a.account_type, t.transaction_type
 ORDER BY a.account_id, total_amount DESC;
 
-
+--Step 6.1: Create a view of active loans with payments greater than $1000:
+CREATE VIEW vw_large_loan_payments AS
+SELECT 
+    l.loan_id,
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    l.loan_amount,
+    l.interest_rate,
+    l.loan_term,
+    lp.payment_id,
+    lp.payment_amount,
+    lp.payment_date
+FROM 
+    dbo.loans l
+JOIN 
+    dbo.customers c ON l.customer_id = c.customer_id
+JOIN 
+    dbo.loan_payments lp ON l.loan_id = lp.loan_id
+WHERE 
+    lp.payment_amount > 1000
+SELECT * FROM vw_large_loan_payments;
 --Create an index on `transaction_date` in the `transactions` table for performance optimization:
 CREATE INDEX IX_transactions_transaction_date
 ON dbo.transactions (transaction_date);
